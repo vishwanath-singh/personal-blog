@@ -1,15 +1,30 @@
-import express, {Request, Response, Express} from 'express';
+import express from 'express';
 import dotenv from 'dotenv';
+import {json, urlencoded} from 'body-parser';
+
+import blogRoutes from './routes/blog';
+import {assertDatabaseConnection} from './database';
 
 dotenv.config();
 
-const app: Express = express();
-const port = process.env.PORT;
+const app = express();
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
-});
+app.use(json())
+app.use(urlencoded({extended:true}))
 
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
-});
+app.use('/blog', blogRoutes)
+
+const startServer = async () => {
+  try {
+    await assertDatabaseConnection();
+    
+    const PORT = process.env.PORT;
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start the server:', error);
+  }
+};
+
+startServer();
