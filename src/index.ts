@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import {json, urlencoded} from 'body-parser';
 
 import blogRoutes from './routes/blog';
+import userRoutes from './routes/user';
 import {assertDatabaseConnection} from './database';
 
 dotenv.config();
@@ -13,6 +14,7 @@ app.use(json())
 app.use(urlencoded({extended:true}))
 
 app.use('/blog', blogRoutes)
+app.use('/user', userRoutes)
 
 const startServer = async () => {
   try {

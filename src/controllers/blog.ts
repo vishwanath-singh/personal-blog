@@ -1,10 +1,16 @@
 import { RequestHandler } from "express";
 import Blog from "../models/blog";
+import User from "../models/user";
 
 
 export const getBlogs: RequestHandler  = async (req, res, next) => {
     try {
-        const blogs = await Blog.findAll()
+        const blogs = await Blog.findAll({
+            include: {
+              model: User,
+              attributes: ['id', 'firstName', 'lastName', 'email'] // Adjust attributes as necessary
+            }
+          })
         res.status(200).json({blogs});
     }
     catch {
@@ -17,7 +23,12 @@ export const getBlogById: RequestHandler<{id:string}>  = async (req, res, next) 
     const blogId = req.params.id
    
     try {
-        const blog = await Blog.findByPk(blogId)
+        const blog = await Blog.findByPk(blogId, {
+            include: {
+              model: User,
+              attributes: ['id', 'firstName', 'lastName', 'email'] // Adjust attributes as necessary
+            }
+          })
         if(blog) res.status(200).json({blog})
         else  res.status(404).json({error:'Blog does not exist'})
     }
@@ -30,19 +41,19 @@ export const getBlogById: RequestHandler<{id:string}>  = async (req, res, next) 
 export const createBlog: RequestHandler = async (req, res, next) => {
     const title = req.body.title;
     const content = req.body.content;
+    const userId = req.body.userId;
 
     try{
-        const blog = await Blog.create({title, content})
+        const blog = await Blog.create({title, content, userId})
         res.status(201).json({
             message:'blog created successfully',
             blog
         })
     }
     catch {
-        res.status(500).json({error:'Failed to created post'})
+        res.status(500).json({error:'Failed to create blog'})
     } 
 
-    
 }
 
 export const updateBlog: RequestHandler<{id:string}>  = async (req, res, next) => {
