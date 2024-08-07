@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { Dialect } from 'sequelize';
 
 dotenv.config()
 
@@ -9,6 +10,7 @@ type DbConnection = {
 	password: string;
 	database: string;
 	dbLogging: boolean;
+    dialect: Dialect
 };
 
 const getEnvVar = (key: string, defaultValue?: string): string => {
@@ -30,6 +32,7 @@ const connection: DbConnection = {
 	password: getEnvVar('DB_PASSWORD'),
 	database: getEnvVar('DB_NAME'),
 	dbLogging: process.env.NODE_ENV === 'development' || process.env.LOG === 'true',
+    dialect: 'postgres'
 };
 
 export default connection;

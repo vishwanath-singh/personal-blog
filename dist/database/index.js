@@ -12,26 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const dotenv_1 = __importDefault(require("dotenv"));
-const body_parser_1 = require("body-parser");
-const blog_1 = __importDefault(require("./routes/blog"));
-const database_1 = require("./database");
-dotenv_1.default.config();
-const app = (0, express_1.default)();
-app.use((0, body_parser_1.json)());
-app.use((0, body_parser_1.urlencoded)({ extended: true }));
-app.use('/blog', blog_1.default);
-const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
+exports.assertDatabaseConnection = exports.sequelizeConnection = void 0;
+const sequelize_1 = require("sequelize");
+const config_1 = __importDefault(require("./config"));
+const { database, user, password, host, dbLogging } = config_1.default;
+exports.sequelizeConnection = new sequelize_1.Sequelize(database, user, password, {
+    host,
+    logging: dbLogging,
+    dialect: 'postgres',
+});
+const assertDatabaseConnection = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield (0, database_1.assertDatabaseConnection)();
-        const PORT = process.env.PORT;
-        app.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
-        });
+        yield exports.sequelizeConnection.authenticate();
+        yield exports.sequelizeConnection.sync();
+        console.log('Connection has been established successfully.');
     }
     catch (error) {
-        console.error('Failed to start the server:', error);
+        console.log('Unable to connect to the database:', error);
+        process.exit(1); // Exit the process with an error code
     }
 });
-startServer();
+exports.assertDatabaseConnection = assertDatabaseConnection;
