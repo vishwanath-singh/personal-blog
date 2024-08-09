@@ -17,7 +17,7 @@ export const assertDatabaseConnection = async (): Promise<void> => {
       console.log('Connection has been established successfully.');
     } catch (error) {
       console.log('Unable to connect to the database:', error);
-      process.exit(1); // Exit the process with an error code
+      //process.exit(1); // Exit the process with an error code
     }
   };
 
