@@ -17,7 +17,7 @@ export default {
   },
 
   down: async (queryInterface: QueryInterface) => {
-    await queryInterface.bulkUpdate('Posts', 
+    await queryInterface.bulkUpdate('Blogs', 
       { userId: null },
       { userId: { [Op.ne]: null } }
     );
